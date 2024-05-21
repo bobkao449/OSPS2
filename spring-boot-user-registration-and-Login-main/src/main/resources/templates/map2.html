@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>map2</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.1/dist/leaflet.markercluster.js"></script>
+    <script src="../PS_type.js"></script>
+    <!--    <script src="../PS_icon.js"></script>-->
+</head>
+<body>
+<div id="map" style="height: 100vh; width: 100vw">
+    <script>
+        console.log(icons)
+        // Create a map
+        var map = L.map('map').setView([24.191075340950587,120.67623138427736], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Define icons
+        var icons = [
+            {
+                icon: L.icon({
+                    iconUrl: '../images/green.png',
+                    iconSize: [15, 15],
+                    iconAnchor: [8, 8]
+                })
+            },
+            {
+                icon: L.icon({
+                    iconUrl: '../images/red.png',
+                    iconSize: [15, 15],
+                    iconAnchor: [8, 8]
+                })
+            }
+        ];
+
+        // Fetch data
+        fetch('https://datacenter.taichung.gov.tw/swagger/OpenData/791a8a4b-ade6-48cf-b3ed-6c594e58a1f1')
+            .then(response => response.json())
+            .then((data)=>{
+                var collection = {
+                    "type": "FeatureCollection",
+                    "features": []
+                };
+
+                data.forEach((item) => {
+                    let point = new L.Marker([item.PS_Lat, item.PS_Lng]);
+                    point.feature = {
+                        type: 'Feature',
+                        properties: {
+                            "車格編號": item['PS_ID'],
+                            "車位種類": PStype[item['PS_type']],
+                            '是否有車': Boolean(Number(item['status']))
+                        },
+                        geometry: undefined
+                    };
+                    collection.features.push(point.toGeoJSON());
+                });
+
+                var pointJSON = L.geoJSON(collection, {
+                    onEachFeature: (feature, layer) => {
+                        layer.bindPopup('車格種類:' + feature.properties['車位種類'] + '<br>車格編號: ' +
+                            feature.properties['車格編號'] + '<br>' + '是否有車: ' + feature.properties['是否有車']);
+                        if (feature.properties['是否有車']) {
+                            layer.setIcon(icons[1].icon);
+                        } else {
+                            layer.setIcon(icons[0].icon);
+                        }
+                    }
+                });
+
+                let markersCluster = L.markerClusterGroup().addLayer(pointJSON).addTo(map);
+
+            });
+    </script>
+</div>
+</body>
+</html>
