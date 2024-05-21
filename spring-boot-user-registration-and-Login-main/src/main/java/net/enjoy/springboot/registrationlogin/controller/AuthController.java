@@ -59,7 +59,6 @@ public class AuthController {
         return "redirect:/register?success";
     }
 
-    // handler method to handle list of users
     @GetMapping("/users")
     public String users(Model model) {
         List<UserDto> users = userService.findAllUsers();
@@ -67,14 +66,19 @@ public class AuthController {
         return "users";
     }
 
-
-
-    // handler method to handle login request
     @GetMapping("/login")
     public String login() {
         return "login";
     }
+    @PostMapping("/login")
+    public String loginPost(@RequestParam String username, @RequestParam String password, Model model) {
 
+        if (username.equals("correctUsername") && password.equals("correctPassword")) {
+            return "redirect:/map1";
+        }
+        model.addAttribute("error", "Invalid username or password");
+        return "login";
+    }
 
 
     @GetMapping("/map1")
@@ -82,11 +86,21 @@ public class AuthController {
 
         return "map1";
     }
+    @GetMapping("/map2")
+    public String map2(){
 
+        return "map2";
+    }
     @GetMapping("/homepage")
     public ModelAndView homepage() {
         ModelAndView modelAndView = new ModelAndView("homepage");
-        // 可以添加需要的模型屬性
         return modelAndView;
     }
+
+//    @RequestMapping("/homepage")
+//    public String redirectTarget(@ModelAttribute String message,Model model){
+//        model.addAttribute("message", message);
+//        return "homepage";
+//    }
+
 }

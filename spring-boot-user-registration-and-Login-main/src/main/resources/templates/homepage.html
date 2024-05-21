@@ -6,9 +6,10 @@
 </head>
 <body>
 <span>
-<a th:href="@{/map1}">map1</a>
+
 </span>
-    <button onclick="window.location.href = 'http://localhost:8080/OSPS/map1';">Go to Map 1</button>
-    <button onclick="window.location.href = 'http://localhost:8080/OSPS/map2';">Go to Map 2</button>
+    <button onclick="window.location.href = 'http://localhost:8080/map1';">Go to Map 1</button>
+    <button onclick="window.location.href = 'http://localhost:8080/map2';">Go to Map 2</button>
+    <a class="nav-link active" aria-current="page" th:href="@{/logout}">Logout</a>
 </body>
 </html>

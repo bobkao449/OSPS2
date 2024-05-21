@@ -39,7 +39,8 @@
         ];
 
         // Fetch data
-        fetch('https://datacenter.taichung.gov.tw/swagger/OpenData/791a8a4b-ade6-48cf-b3ed-6c594e58a1f1')
+        // fetch('https://datacenter.taichung.gov.tw/swagger/OpenData/791a8a4b-ade6-48cf-b3ed-6c594e58a1f1')
+        fetch('../parkingspace.json')
             .then(response => response.json())
             .then((data)=>{
                 var collection = {
