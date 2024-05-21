@@ -10,9 +10,13 @@
         <module name="registration-login" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="OSPS2" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="OSPS2" options="-parameters" />
       <module name="registration-login" options="-parameters" />
     </option>
   </component>
