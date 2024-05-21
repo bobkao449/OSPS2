@@ -8,14 +8,36 @@
     <script src="../PS_type.js"></script>
     <!--    <script src="../PS_icon.js"></script>-->
 </head>
+<style>
+
+    #map{
+        position: absolute;
+        top: 1vh;
+        left: 1vh;
+        right: 1vh;
+        bottom: 1vh;
+    }
+    .button {
+        position: fixed;
+        top: 6px;
+        right: 6px;
+        z-index: 9999;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
 <body>
-    <button onclick="window.location.href = 'http://localhost:8080/homepage';">homepage</button>
+<button class="button" onclick="window.location.href = 'http://localhost:8080/homepage';">Exit</button>
 <div id="map" style="height: 97vh; width: 99.3vw"></div>
 <script>
     attributionControl: false
     var map = L.map('map').setView([23.694822, 120.534397], 16);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 17,
+        maxZoom: 18,
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
@@ -57,7 +79,7 @@
 
         });
 
-    //刪除浮水印
+
     document.addEventListener('DOMContentLoaded', function() {
         var attribution = document.querySelector('.leaflet-control-attribution');
         if (attribution) {

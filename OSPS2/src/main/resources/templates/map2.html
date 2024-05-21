@@ -8,11 +8,46 @@
     <script src="https://unpkg.com/leaflet.markercluster@1.5.1/dist/leaflet.markercluster.js"></script>
     <script src="../PS_type.js"></script>
     <!--    <script src="../PS_icon.js"></script>-->
+    <style>
+        #map {
+            position: absolute;
+            top: 1vh;
+            left: 1vh;
+            right: 1vh;
+            bottom: 1vh;
+        }
+        .button {
+            position: fixed;
+            top: 6px;
+            right: 6px;
+            z-index: 9999;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 99999;
+            display: none;
+            font-size: 24px;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+        }
+    </style>
 </head>
 <body>
-<div id="map" style="height: 100vh; width: 100vw">
+<button class="button" onclick="window.location.href = 'http://localhost:8080/homepage';">Exit</button>
+<div id="loading">Loading...</div>
+<div id="map">
     <script>
-        console.log(icons)
+        // Display loading animation
+        document.getElementById('loading').style.display = 'block';
+
         // Create a map
         var map = L.map('map').setView([24.191075340950587,120.67623138427736], 13);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -39,8 +74,8 @@
         ];
 
         // Fetch data
-        // fetch('https://datacenter.taichung.gov.tw/swagger/OpenData/791a8a4b-ade6-48cf-b3ed-6c594e58a1f1')
-        fetch('../parkingspace.json')
+        fetch('https://datacenter.taichung.gov.tw/swagger/OpenData/791a8a4b-ade6-48cf-b3ed-6c594e58a1f1')
+            // fetch('../parkingspace.json')
             .then(response => response.json())
             .then((data)=>{
                 var collection = {
@@ -76,7 +111,15 @@
 
                 let markersCluster = L.markerClusterGroup().addLayer(pointJSON).addTo(map);
 
+                // Hide loading animation after data is loaded
+                document.getElementById('loading').style.display = 'none';
             });
+        document.addEventListener('DOMContentLoaded', function() {
+            var attribution = document.querySelector('.leaflet-control-attribution');
+            if (attribution) {
+                attribution.parentNode.removeChild(attribution);
+            }
+        });
     </script>
 </div>
 </body>
