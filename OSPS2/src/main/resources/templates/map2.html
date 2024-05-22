@@ -33,7 +33,6 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 99999;
-            display: none;
             font-size: 24px;
             font-family: "Comic Sans MS", "Comic Sans", cursive;
         }
@@ -44,31 +43,35 @@
 <div id="loading">Loading...</div>
 <div id="map"></div>
 <script>
-    document.getElementById('loading').style.display = 'block';
-    var map;
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                var userLat = position.coords.latitude;
-                var userLng = position.coords.longitude;
-                map = L.map('map').setView([userLat, userLng], 16);
-                loadMapData();
-            },
-            function() {
-                map = L.map('map').setView([24.191075340950587, 120.67623138427736], 14);
-                loadMapData();
-            }
-        );
-    } else {
-        map = L.map('map').setView([24.191075340950587, 120.67623138427736], 14);
-        loadMapData();
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+                    initializeMap([userLat, userLng], 16);
+                },
+                function() {
+                    initializeMap([24.191075340950587, 120.67623138427736], 14);
+                }
+            );
+        } else {
+            initializeMap([24.191075340950587, 120.67623138427736], 14);
+        }
+    });
 
-    function loadMapData() {
+    function initializeMap(center, zoom) {
+        var map = L.map('map').setView(center, zoom);
+
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '© OpenStreetMap'
         }).addTo(map);
+
+        var attribution = document.querySelector('.leaflet-control-attribution');
+        if (attribution) {
+            attribution.parentNode.removeChild(attribution);
+        }
 
         var icons = [
             {
@@ -87,8 +90,8 @@
             },
             {
                 icon: L.icon({
-                    iconUrl: '../images/yellow.png',
-                    iconSize: [15, 15],
+                    iconUrl: '../images/favorite.png',
+                    iconSize: [18, 18],
                     iconAnchor: [8, 8]
                 })
             }
@@ -129,11 +132,7 @@
                         `;
 
                         layer.bindPopup(popupContent);
-                        if (feature.properties['是否有車']) {
-                            layer.setIcon(icons[1].icon);
-                        } else {
-                            layer.setIcon(icons[0].icon);
-                        }
+                        layer.setIcon(feature.properties['是否有車'] ? icons[1].icon : icons[0].icon);
 
                         layer.on('popupopen', function() {
                             let favButton = document.querySelector('.fav-button');
@@ -147,16 +146,8 @@
                 });
 
                 let markersCluster = L.markerClusterGroup().addLayer(pointJSON).addTo(map);
-
                 document.getElementById('loading').style.display = 'none';
             });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var attribution = document.querySelector('.leaflet-control-attribution');
-            if (attribution) {
-                attribution.parentNode.removeChild(attribution);
-            }
-        });
     }
 </script>
 </body>
