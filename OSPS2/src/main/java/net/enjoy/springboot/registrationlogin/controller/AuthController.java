@@ -29,6 +29,11 @@ public class AuthController {
         return "index";
     }
 
+    @GetMapping("/homesample")
+    public String homesample() {
+        return "homesample";
+    }
+
     // handler method to handle user registration form request
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -59,6 +64,11 @@ public class AuthController {
         return "redirect:/login";
     }
 
+    @GetMapping("/usersample")
+    public String user() {
+        return "usersample";
+    }
+
     @GetMapping("/users")
     public String users(Model model) {
         List<UserDto> users = userService.findAllUsers();
@@ -80,6 +90,10 @@ public class AuthController {
         return "login";
     }
 
+    @GetMapping("/mapsample")
+    public String map() {
+        return "mapsample";
+    }
 
     @GetMapping("/map1")
     public String map1(){
