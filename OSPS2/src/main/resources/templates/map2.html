@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.1/dist/MarkerCluster.Default.css" />
     <script src="https://unpkg.com/leaflet.markercluster@1.5.1/dist/leaflet.markercluster.js"></script>
     <script src="../PS_type.js"></script>
-    <!--    <script src="../PS_icon.js"></script>-->
     <style>
         #map {
             position: absolute;
@@ -18,8 +17,8 @@
         }
         .button {
             position: fixed;
-            top: 6px;
-            right: 6px;
+            top: 14px;
+            right: 12px;
             z-index: 9999;
             background-color: #007bff;
             color: #fff;
@@ -43,19 +42,34 @@
 <body>
 <button class="button" onclick="window.location.href = 'http://localhost:8080/homepage';">Exit</button>
 <div id="loading">Loading...</div>
-<div id="map">
-    <script>
-        // Display loading animation
-        document.getElementById('loading').style.display = 'block';
+<div id="map"></div>
+<script>
+    document.getElementById('loading').style.display = 'block';
+    var map;
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                var userLat = position.coords.latitude;
+                var userLng = position.coords.longitude;
+                map = L.map('map').setView([userLat, userLng], 16);
+                loadMapData();
+            },
+            function() {
+                map = L.map('map').setView([24.191075340950587, 120.67623138427736], 14);
+                loadMapData();
+            }
+        );
+    } else {
+        map = L.map('map').setView([24.191075340950587, 120.67623138427736], 14);
+        loadMapData();
+    }
 
-        // Create a map
-        var map = L.map('map').setView([24.191075340950587,120.67623138427736], 13);
+    function loadMapData() {
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 17,
+            maxZoom: 18,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Define icons
         var icons = [
             {
                 icon: L.icon({
@@ -70,14 +84,19 @@
                     iconSize: [15, 15],
                     iconAnchor: [8, 8]
                 })
+            },
+            {
+                icon: L.icon({
+                    iconUrl: '../images/yellow.png',
+                    iconSize: [15, 15],
+                    iconAnchor: [8, 8]
+                })
             }
         ];
 
-        // Fetch data
         fetch('https://datacenter.taichung.gov.tw/swagger/OpenData/791a8a4b-ade6-48cf-b3ed-6c594e58a1f1')
-            // fetch('../parkingspace.json')
             .then(response => response.json())
-            .then((data)=>{
+            .then((data) => {
                 var collection = {
                     "type": "FeatureCollection",
                     "features": []
@@ -90,7 +109,8 @@
                         properties: {
                             "車格編號": item['PS_ID'],
                             "車位種類": PStype[item['PS_type']],
-                            '是否有車': Boolean(Number(item['status']))
+                            '是否有車': Boolean(Number(item['status'])),
+                            'favorite': false
                         },
                         geometry: undefined
                     };
@@ -99,28 +119,45 @@
 
                 var pointJSON = L.geoJSON(collection, {
                     onEachFeature: (feature, layer) => {
-                        layer.bindPopup('車格種類:' + feature.properties['車位種類'] + '<br>車格編號: ' +
-                            feature.properties['車格編號'] + '<br>' + '是否有車: ' + feature.properties['是否有車']);
+                        let googleMapsLink = `https://www.google.com/maps?q=${feature.geometry.coordinates[1]},${feature.geometry.coordinates[0]}`;
+                        let popupContent = `
+                            車格種類: ${feature.properties['車位種類']}<br>
+                            車格編號: ${feature.properties['車格編號']}<br>
+                            是否有車: ${feature.properties['是否有車']}<br>
+                            <a href="${googleMapsLink}" target="_blank">前往Google導航</a><br>
+                            <button class="fav-button">${feature.properties['favorite'] ? '取消最愛' : '加入最愛'}</button>
+                        `;
+
+                        layer.bindPopup(popupContent);
                         if (feature.properties['是否有車']) {
                             layer.setIcon(icons[1].icon);
                         } else {
                             layer.setIcon(icons[0].icon);
                         }
+
+                        layer.on('popupopen', function() {
+                            let favButton = document.querySelector('.fav-button');
+                            favButton.addEventListener('click', function() {
+                                feature.properties['favorite'] = !feature.properties['favorite'];
+                                favButton.textContent = feature.properties['favorite'] ? '取消最愛' : '加入最愛';
+                                layer.setIcon(feature.properties['favorite'] ? icons[2].icon : (feature.properties['是否有車'] ? icons[1].icon : icons[0].icon));
+                            });
+                        });
                     }
                 });
 
                 let markersCluster = L.markerClusterGroup().addLayer(pointJSON).addTo(map);
 
-                // Hide loading animation after data is loaded
                 document.getElementById('loading').style.display = 'none';
             });
+
         document.addEventListener('DOMContentLoaded', function() {
             var attribution = document.querySelector('.leaflet-control-attribution');
             if (attribution) {
                 attribution.parentNode.removeChild(attribution);
             }
         });
-    </script>
-</div>
+    }
+</script>
 </body>
 </html>

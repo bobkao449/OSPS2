@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-
     <title>map1</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="../PS_type.js"></script>
-    <!--    <script src="../PS_icon.js"></script>-->
 </head>
 <style>
-
-    #map{
+    #map {
         position: absolute;
         top: 1vh;
         left: 1vh;
@@ -19,8 +16,8 @@
     }
     .button {
         position: fixed;
-        top: 6px;
-        right: 6px;
+        top: 14px;
+        right: 12px;
         z-index: 9999;
         background-color: #007bff;
         color: #fff;
@@ -32,16 +29,30 @@
 </style>
 <body>
 <button class="button" onclick="window.location.href = 'http://localhost:8080/homepage';">Exit</button>
-<div id="map" style="height: 97vh; width: 99.3vw"></div>
+<div id="map"></div>
 <script>
-    attributionControl: false
-    var map = L.map('map').setView([23.694822, 120.534397], 16);
+    var map = L.map('map');
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                var userLat = position.coords.latitude;
+                var userLng = position.coords.longitude;
+                map.setView([userLat, userLng], 16);
+            },
+            function() {
+                map.setView([23.694822, 120.534397], 16);
+            }
+        );
+    } else {
+        map.setView([23.694822, 120.534397], 16);
+    }
+
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // Define icons
     var icons = [
         {
             icon: L.icon({
@@ -56,36 +67,92 @@
                 iconSize: [8, 8],
                 iconAnchor: [3, 3]
             })
+        },
+        {
+            icon: L.icon({
+                iconUrl: '../images/yellow.png',
+                iconSize: [8, 8],
+                iconAnchor: [3, 3]
+            })
         }
     ];
 
-    // Fetch data
+    function loadFavorites() {
+        let favorites = localStorage.getItem('favorites');
+        return favorites ? JSON.parse(favorites) : [];
+    }
+
+    function saveFavorites(favorites) {
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+
+    let favorites = loadFavorites();
+
     fetch('../yuntech.json')
         .then(response => response.json())
-        .then((data)=>{
-            var collection = {
-                "type": "FeatureCollection",
-                "features": []
-            };
-
+        .then((data) => {
             data.forEach((item) => {
+                let isFavorite = favorites.some(fav => fav.PS_ID === item.PS_ID);
                 let point = new L.Marker([item.PS_Lat, item.PS_Lng], {
-                    icon: item['status'] === '0' ? icons[0].icon : icons[1].icon
+                    icon: isFavorite ? icons[2].icon : (item['status'] === '0' ? icons[0].icon : icons[1].icon)
                 });
-                point.bindPopup('車格種類:' + PStype[item['PS_type']] + '<br>車格編號: ' +
-                    item['PS_ID'] + '<br>' + '車位狀態: ' + (Boolean(Number(item['status'])) ? '有車' : '沒車'));
-                point.addTo(map);
-            });
 
+                let googleMapsLink = `https://www.google.com/maps?q=${item.PS_Lat},${item.PS_Lng}`;
+                let popupContent = () => `
+                    車格種類: ${PStype[item['PS_type']]}<br>
+                    車格編號: ${item['PS_ID']}<br>
+                    車位狀態: ${Boolean(Number(item['status'])) ? '有車' : '沒車'}<br>
+                    <a href="${googleMapsLink}" target="_blank">前往Google導航</a><br>
+                    <button onclick="toggleFavorite(${item.PS_Lat}, ${item.PS_Lng}, '${item.PS_ID}', this)">
+                        ${isFavorite ? '取消最愛' : '加入最愛'}
+                    </button>
+                `;
+
+                point.bindPopup(popupContent);
+                point.addTo(map);
+
+                point.on('popupopen', function () {
+                    let button = document.querySelector('.leaflet-popup-content button');
+                    button.onclick = function() {
+                        isFavorite = !isFavorite;
+                        point.setIcon(isFavorite ? icons[2].icon : (item['status'] === '0' ? icons[0].icon : icons[1].icon));
+                        point.bindPopup(popupContent()).openPopup();
+                        updateFavorites(item, isFavorite);
+                    };
+                });
+            });
         });
 
+    function toggleFavorite(lat, lng, PS_ID, button) {
+        map.eachLayer(function (layer) {
+            if (layer instanceof L.Marker) {
+                var position = layer.getLatLng();
+                if (position.lat === lat && position.lng === lng) {
+                    var isFavorite = button.textContent === '加入最愛';
+                    var iconIndex = isFavorite ? 2 : (layer.options.icon === icons[0].icon ? 0 : 1);
+                    layer.setIcon(icons[iconIndex].icon);
+                    button.textContent = isFavorite ? '取消最愛' : '加入最愛';
+                    updateFavorites({ PS_ID: PS_ID, PS_Lat: lat, PS_Lng: lng }, isFavorite);
+                }
+            }
+        });
+    }
+
+    function updateFavorites(item, isFavorite) {
+        let favorites = loadFavorites();
+        if (isFavorite) {
+            favorites.push(item);
+        } else {
+            favorites = favorites.filter(fav => fav.PS_ID !== item.PS_ID);
+        }
+        saveFavorites(favorites);
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         var attribution = document.querySelector('.leaflet-control-attribution');
         if (attribution) {
             attribution.parentNode.removeChild(attribution);
         }
-
     });
 </script>
 </body>
