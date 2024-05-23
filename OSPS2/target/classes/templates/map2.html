@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>map2</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.1/dist/leaflet.markercluster.js"></script>
+    <script src="../PS_type.js"></script>
+    <style>
+        #map {
+            position: absolute;
+            top: 1vh;
+            left: 1vh;
+            right: 1vh;
+            bottom: 1vh;
+        }
+        .button {
+            position: fixed;
+            top: 14px;
+            right: 12px;
+            z-index: 9999;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 99999;
+            font-size: 24px;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+        }
+    </style>
+</head>
+<body>
+<button class="button" onclick="window.location.href = 'http://localhost:8080/homepage';">Exit</button>
+<div id="loading">Loading...</div>
+<div id="map"></div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+                    initializeMap([userLat, userLng], 16);
+                },
+                function() {
+                    initializeMap([24.191075340950587, 120.67623138427736], 14);
+                }
+            );
+        } else {
+            initializeMap([24.191075340950587, 120.67623138427736], 14);
+        }
+    });
+
+    function initializeMap(center, zoom) {
+        var map = L.map('map').setView(center, zoom);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        var attribution = document.querySelector('.leaflet-control-attribution');
+        if (attribution) {
+            attribution.parentNode.removeChild(attribution);
+        }
+
+        var icons = [
+            {
+                icon: L.icon({
+                    iconUrl: '../images/green.png',
+                    iconSize: [15, 15],
+                    iconAnchor: [8, 8]
+                })
+            },
+            {
+                icon: L.icon({
+                    iconUrl: '../images/red.png',
+                    iconSize: [15, 15],
+                    iconAnchor: [8, 8]
+                })
+            },
+            {
+                icon: L.icon({
+                    iconUrl: '../images/favorite.png',
+                    iconSize: [18, 18],
+                    iconAnchor: [8, 8]
+                })
+            }
+        ];
+
+        fetch('https://datacenter.taichung.gov.tw/swagger/OpenData/791a8a4b-ade6-48cf-b3ed-6c594e58a1f1')
+            .then(response => response.json())
+            .then((data) => {
+                var collection = {
+                    "type": "FeatureCollection",
+                    "features": []
+                };
+
+                data.forEach((item) => {
+                    let point = new L.Marker([item.PS_Lat, item.PS_Lng]);
+                    point.feature = {
+                        type: 'Feature',
+                        properties: {
+                            "車格編號": item['PS_ID'],
+                            "車位種類": PStype[item['PS_type']],
+                            '是否有車': Boolean(Number(item['status'])),
+                            'favorite': false
+                        },
+                        geometry: undefined
+                    };
+                    collection.features.push(point.toGeoJSON());
+                });
+
+                var pointJSON = L.geoJSON(collection, {
+                    onEachFeature: (feature, layer) => {
+                        let googleMapsLink = `https://www.google.com/maps?q=${feature.geometry.coordinates[1]},${feature.geometry.coordinates[0]}`;
+                        let popupContent = `
+                            車格種類: ${feature.properties['車位種類']}<br>
+                            車格編號: ${feature.properties['車格編號']}<br>
+                            是否有車: ${feature.properties['是否有車']}<br>
+                            <a href="${googleMapsLink}" target="_blank">前往Google導航</a><br>
+                            <button class="fav-button">${feature.properties['favorite'] ? '取消最愛' : '加入最愛'}</button>
+                        `;
+
+                        layer.bindPopup(popupContent);
+                        layer.setIcon(feature.properties['是否有車'] ? icons[1].icon : icons[0].icon);
+
+                        layer.on('popupopen', function() {
+                            let favButton = document.querySelector('.fav-button');
+                            favButton.addEventListener('click', function() {
+                                feature.properties['favorite'] = !feature.properties['favorite'];
+                                favButton.textContent = feature.properties['favorite'] ? '取消最愛' : '加入最愛';
+                                layer.setIcon(feature.properties['favorite'] ? icons[2].icon : (feature.properties['是否有車'] ? icons[1].icon : icons[0].icon));
+                            });
+                        });
+                    }
+                });
+
+                let markersCluster = L.markerClusterGroup().addLayer(pointJSON).addTo(map);
+                document.getElementById('loading').style.display = 'none';
+            });
+    }
+</script>
+</body>
+</html>
