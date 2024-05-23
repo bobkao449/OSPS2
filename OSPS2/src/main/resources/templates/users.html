@@ -9,29 +9,22 @@
           rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
           crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/homepage.css">
 </head>
+<style>
+    body {
+        background-color: #ffffff;
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
+</style>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Registration and Login System</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/register}">Register</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/logout}">Logout</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<header>
+    <img src="/images/logo.png" alt="Logo" class="logo">
+</header>
+<br><br>
 <div class="container">
     <div class="row">
-        <h1> Registered Users </h1>
     </div>
     <table class="table table-striped table-bordered table-hover">
         <thead class="table-dark">
@@ -50,10 +43,12 @@
         </tbody>
     </table>
 </div>
-<span>
-<a th:href="@{/map1}">map1</a>
-</span>
-<button onclick="window.location.href = 'http://localhost:8080/map1';">Go to Map 1</button>
-<button onclick="window.location.href = 'http://localhost:8080/map2';">Go to Map 2</button>
+<footer>
+    <ul class="footer-menu">
+        <li><a href="/user"><img src="/images/user.png" alt="User" class="footer-icon"></a></li>
+        <li><a href="/homepage"><img src="/images/home.png" alt="Home" class="footer-icon"></a></li>
+        <li><a href="/logout"><img src="/images/logout.svg" alt="Map" class="footer-icon"></a></li>
+    </ul>
+</footer>
 </body>
 </html>

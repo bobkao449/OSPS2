@@ -4,24 +4,20 @@ function toggleMenu() {
 }
 
 function performSearch() {
-    const searchBar = document.querySelector('.search-bar');
-    const query = searchBar.value;
-    const resultsContainer = document.getElementById('search-results');
+    var selectElement = document.getElementById('location-select');
+    var selectedValue = selectElement.value;
 
-    // 模擬搜尋結果
-    const results = `Results for "${query}"`;
-    resultsContainer.textContent = results;
-
-    // 設置結果顯示一秒後清除
-    setTimeout(() => {
-        resultsContainer.textContent = '';
-    }, 1000);
+    if (selectedValue) {
+        window.location.href = '/' + selectedValue;
+    } else {
+        alert('請選擇一個地點');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     const text = "Easy Parking.";
     let index = 0;
-    const speed = 200; // Typing speed in milliseconds
+    const speed = 150; // Typing speed in milliseconds
 
     function typeWriter() {
         if (index < text.length) {

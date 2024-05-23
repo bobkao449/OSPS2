@@ -19,18 +19,20 @@
         top: 14px;
         right: 12px;
         z-index: 9999;
-        background-color: #007bff;
+        background-color: #3c3c3c;
         color: #fff;
         border: none;
         padding: 10px 15px;
         border-radius: 5px;
         cursor: pointer;
     }
+
 </style>
 <body>
 <button class="button" onclick="window.location.href = 'http://localhost:8080/homepage';">Exit</button>
 <div id="map"></div>
 <script>
+
     var map = L.map('map');
 
     if (navigator.geolocation) {
@@ -48,10 +50,21 @@
         map.setView([23.694822, 120.534397], 16);
     }
 
+    const baseEMAPHighDPI = L.tileLayer('https://wmts.nlsc.gov.tw/wmts/EMAP96/default/GoogleMapsCompatible/{z}/{y}/{x}', {
+        maxNativeZoom: 18,
+        maxZoom: 18,
+        minZoom: 6
+    });
+    baseEMAPHighDPI.addTo(map);
+
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap'
     }).addTo(map);
+
+    L.control.scale().addTo(map);
+
+
 
     var icons = [
         {
@@ -153,6 +166,10 @@
         if (attribution) {
             attribution.parentNode.removeChild(attribution);
         }
+
+
+
+
     });
 </script>
 </body>

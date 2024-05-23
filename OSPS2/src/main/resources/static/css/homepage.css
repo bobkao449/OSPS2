@@ -1,0 +1,159 @@
+/* 設置整個網頁的背景顏色為灰色 */
+body {
+    background-color: #474646;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* 設置頂部的白邊 */
+header {
+    background-color: white;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative; /* 确保 header 具有定位上下文 */
+    /*z-index: 1001; !* 设定高于侧边菜单的层叠顺序 *!*/
+}
+
+/* 設置Logo */
+.logo {
+    height: 40px; /* 根據需要調整Logo的大小 */
+    animation: none;/* 取消logo動畫 */
+}
+
+/* 設置主內容區域 */
+main {
+    padding: 20px;
+    text-align: center;
+    margin-top: 50px; /* 設置主內容區域往下移動 */
+    position: relative; /* 确保主内容具有定位上下文 */
+    z-index: 999; /* 设定低于侧边菜单的层叠顺序 */
+}
+
+main h1 {
+    font-family: 'Palatino', 'Palatino Linotype', 'Palatino LT STD', 'Book Antiqua', Georgia, serif;
+    color: white;
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+    font-weight: 350; /* 设置字体为较细的样式 */
+}
+
+/* 設置介紹文字樣式 */
+.intro-text {
+    font-family: 'Palatino', 'Palatino Linotype', 'Palatino LT STD', 'Book Antiqua', Georgia, serif;
+    color: #ddd;
+    margin: 20px 0;
+    opacity: 0;
+    animation: fadeIn 1s forwards 1s;
+    text-align: justify; /* 設置左右等寬文字對齊 */
+    max-width: 800px; /* 設置最大寬度，根據需要調整 */
+    margin-left: auto; /* 居中 */
+    margin-right: auto; /* 居中 */
+}
+
+
+/* 主頁面的按鈕樣式 */
+.main-btn {
+    background-color: #2c2c2c; /* 黑灰色背景 */
+    border: none;
+    color: white;
+    padding: 15px 70px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 30px 2px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 30px; /* 設置圓角 */
+    opacity: 0;
+    animation: fadeIn 1s forwards 0.5s;
+}
+
+/* 設置搜尋欄位的樣式 */
+.search-container {
+    display: flex;
+    justify-content: center;
+    /*margin: 50px 0; !* 設置與其他元素的距離 *!*/
+    margin-top: 50px; /* 設置主內容區域往下移動 */
+    opacity: 0;
+    animation: fadeIn 1s forwards 1s;
+}
+
+.search-bar {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 12px 0 0 12px; /* 設置圓角 */
+    border: 1px solid #ccc;
+    width: 70%; /* 根據需要調整寬度 */
+}
+
+.search-btn {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 0 12px 12px 0; /* 設置圓角 */
+    border: 1px solid #ccc;
+    background-color: #5897c5; /* 設置背景顏色 */
+    color: white;
+    cursor: pointer;
+}
+
+/* 設置底部菜單 */
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #d5d5d5;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.footer-menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.footer-menu li {
+    flex: 1;
+}
+
+.footer-menu li a {
+    text-decoration: none;
+    color: #323232;
+    display: block;
+    padding: 10px 0;
+}
+
+.footer-icon {
+    height: 24px;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 10px;
+    background-color: #92a8c1;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+.button:hover {
+    background-color: #b0d6ff;
+}
+/* 定義動畫 */
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+
+}

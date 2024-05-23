@@ -131,21 +131,29 @@ footer {
     padding: 10px 0;
 }
 
-.home-icon {
-    height: 24px; /* 調整圖示大小 */
+.footer-icon {
+    height: 24px;
 }
 
-.map-icon {
-    height: 24px; /* 調整圖示大小 */
+.button {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 10px;
+    background-color: #92a8c1;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
 }
-
-.user-icon {
-    height: 24px; /* 調整圖示大小 */
+.button:hover {
+    background-color: #b0d6ff;
 }
-
 /* 定義動畫 */
 @keyframes fadeIn {
     to {
         opacity: 1;
     }
+
 }
