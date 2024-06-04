@@ -75,7 +75,7 @@ public class AuthController {
     @PostMapping("/login")
     public String loginPost(@RequestParam String username, @RequestParam String password, Model model) {
         if (username.equals("correctUsername") && password.equals("correctPassword")) {
-            return "redirect:/map1";
+            return "redirect:/homepage";
         }
         model.addAttribute("error", "Invalid username or password");
         return "login";
