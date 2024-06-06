@@ -6,13 +6,19 @@
     <title>Home</title>
     <link rel="stylesheet" href="/css/homepage.css">
 </head>
+<script>
+    function goToAdminLogin() {
+        window.location.href = "/adminlogin";
+    }
+</script>
 <body>
 <header>
+    <button onclick="goToAdminLogin()" class="admin-login-btn">Admin</button>
     <img src="/images/logo.png" alt="Logo" class="logo">
 </header>
 <main>
     <h1>User Page</h1>
-    <button class="button" onclick="window.location.href='/users'">Other User List</button>
+
 
 </main>
 <footer>

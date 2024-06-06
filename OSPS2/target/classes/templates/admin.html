@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin</title>
+  <style>
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background-color: #d5d5d5;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-menu {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .footer-menu li {
+      flex: 1;
+    }
+
+    .footer-menu li a {
+      text-decoration: none;
+      color: #323232;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 15px;
+      background-color: #d5d5d5;
+      transition: background-color 0.3s;
+    }
+
+    .footer-menu li a:hover {
+      background-color: #c0c0c0;
+    }
+
+    .footer-icon {
+      height: 24px;
+    }
+  </style>
+</head>
+<body>
+<a href="/map1admin">Map 1</a>
+<a href="/map2admin">Map 2</a>
+<footer style="left: 0;">
+  <ul class="footer-menu">
+    <li><a href="/user"><img src="/images/user.png" alt="User" class="footer-icon"></a></li>
+    <li><a href="/homepage"><img src="/images/home.png" alt="Home" class="footer-icon"></a></li>
+    <li><a href="/logout"><img src="/images/logout.svg" alt="Map" class="footer-icon"></a></li>
+
+  </ul>
+</footer>
+
+</body>
+</html>

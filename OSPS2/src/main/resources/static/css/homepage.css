@@ -17,6 +17,22 @@ header {
 }
 
 /* 設置Logo */
+.admin-login-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.admin-login-btn:hover {
+    background-color: #333;
+}
 .logo {
     height: 40px; /* 根據需要調整Logo的大小 */
     animation: none;/* 取消logo動畫 */

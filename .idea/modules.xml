@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/OSPS.iml" filepath="$PROJECT_DIR$/.idea/OSPS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/library.iml" filepath="$PROJECT_DIR$/.idea/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/OSPS2/registration-login.iml" filepath="$PROJECT_DIR$/OSPS2/registration-login.iml" />
     </modules>
   </component>
 </project>

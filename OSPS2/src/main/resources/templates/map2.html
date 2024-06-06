@@ -10,10 +10,10 @@
     <style>
         #map {
             position: absolute;
-            top: 1vh;
-            left: 1vh;
-            right: 1vh;
-            bottom: 1vh;
+            top: 0vh;
+            left: 0vh;
+            right: 0vh;
+            bottom: 11.5vh;
         }
         .button {
             position: fixed;
@@ -36,6 +36,41 @@
             font-size: 24px;
             font-family: "Comic Sans MS", "Comic Sans", cursive;
         }
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #d5d5d5;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-menu {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .footer-menu li {
+            flex: 1;
+        }
+
+        .footer-menu li a {
+            text-decoration: none;
+            color: #323232;
+            display: block;
+            padding: 10px 0;
+        }
+
+        .footer-icon {
+            height: 24px;
+        }
+
     </style>
 </head>
 <body>
@@ -120,7 +155,7 @@
                         properties: {
                             "車格編號": item['PS_ID'],
                             "車位種類": PStype[item['PS_type']],
-                            '是否有車': Boolean(Number(item['status'])),
+                            '車位狀態': Number(item['status']) ? '有車' : '沒車',
                             'favorite': false
                         },
                         geometry: undefined
@@ -134,20 +169,20 @@
                         let popupContent = `
                             車格種類: ${feature.properties['車位種類']}<br>
                             車格編號: ${feature.properties['車格編號']}<br>
-                            是否有車: ${feature.properties['是否有車']}<br>
+                            車位狀態: ${feature.properties['車位狀態']}<br>
                             <a href="${googleMapsLink}" target="_blank">前往Google導航</a><br>
                             <button class="fav-button">${feature.properties['favorite'] ? '取消最愛' : '加入最愛'}</button>
                         `;
 
                         layer.bindPopup(popupContent);
-                        layer.setIcon(feature.properties['是否有車'] ? icons[1].icon : icons[0].icon);
+                        layer.setIcon(feature.properties['車位狀態'] === '有車' ? icons[1].icon : icons[0].icon);
 
                         layer.on('popupopen', function() {
                             let favButton = document.querySelector('.fav-button');
                             favButton.addEventListener('click', function() {
                                 feature.properties['favorite'] = !feature.properties['favorite'];
                                 favButton.textContent = feature.properties['favorite'] ? '取消最愛' : '加入最愛';
-                                layer.setIcon(feature.properties['favorite'] ? icons[2].icon : (feature.properties['是否有車'] ? icons[1].icon : icons[0].icon));
+                                layer.setIcon(feature.properties['favorite'] ? icons[2].icon : (feature.properties['車位狀態'] === '有車' ? icons[1].icon : icons[0].icon));
                             });
                         });
                     }
@@ -158,5 +193,12 @@
             });
     }
 </script>
+<footer style="left: 0;">
+    <ul class="footer-menu">
+        <li><a href="/user"><img src="/images/user.png" alt="User" class="footer-icon"></a></li>
+        <li><a href="/homepage"><img src="/images/home.png" alt="Home" class="footer-icon"></a></li>
+        <li><a href="/logout"><img src="/images/logout.svg" alt="Map" class="footer-icon"></a></li>
+    </ul>
+</footer>
 </body>
 </html>

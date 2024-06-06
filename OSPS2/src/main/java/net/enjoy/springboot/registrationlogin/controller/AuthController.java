@@ -84,14 +84,32 @@ public class AuthController {
     public String map1(){
         return "map1";
     }
+    @GetMapping("/map1admin")
+    public String map1admin(){
+        return "map1admin";
+    }
+
     @GetMapping("/map2")
     public String map2(){
         return "map2";
+    }
+    @GetMapping("/map2admin")
+    public String map2admin(){
+        return "map2admin";
     }
     @GetMapping("/homepage")
     public ModelAndView homepage() {
         ModelAndView modelAndView = new ModelAndView("homepage");
         return modelAndView;
+    }
+    @GetMapping("/adminlogin")
+    public String adminlogin(){
+        return "adminlogin";
+    }
+
+    @GetMapping("/admin")
+    public String admin(){
+        return "admin";
     }
 
 }

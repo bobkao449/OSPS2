@@ -9,10 +9,10 @@
 <style>
     #map {
         position: absolute;
-        top: 1vh;
-        left: 1vh;
-        right: 1vh;
-        bottom: 1vh;
+        top: 0vh;
+        left: 0vh;
+        right: 0vh;
+        bottom: 11.5vh;
     }
     .button {
         position: fixed;
@@ -26,13 +26,46 @@
         border-radius: 5px;
         cursor: pointer;
     }
+    footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #d5d5d5;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-menu {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .footer-menu li {
+        flex: 1;
+    }
+
+    .footer-menu li a {
+        text-decoration: none;
+        color: #323232;
+        display: block;
+        padding: 10px 0;
+    }
+
+    .footer-icon {
+        height: 24px;
+    }
 
 </style>
 <body>
 <button class="button" onclick="window.location.href = 'http://localhost:8080/homepage';">Exit</button>
 <div id="map"></div>
 <script>
-
     var map = L.map('map');
 
     if (navigator.geolocation) {
@@ -63,8 +96,6 @@
     }).addTo(map);
 
     L.control.scale().addTo(map);
-
-
 
     var icons = [
         {
@@ -101,38 +132,43 @@
 
     let favorites = loadFavorites();
 
-    fetch('../yuntech.json')
+    fetch('../parkingSpots')
         .then(response => response.json())
         .then((data) => {
+            console.log("Parking spots data:", data);
             data.forEach((item) => {
-                let isFavorite = favorites.some(fav => fav.PS_ID === item.PS_ID);
-                let point = new L.Marker([item.PS_Lat, item.PS_Lng], {
-                    icon: isFavorite ? icons[2].icon : (item['status'] === '0' ? icons[0].icon : icons[1].icon)
-                });
+                console.log("Parking spot:", item);
+                let isFavorite = favorites.some(fav => fav.ps_ID === item.ps_ID);
+                if (item.ps_Lat && item.ps_Lng) {
+                    let point = new L.Marker([item.ps_Lat, item.ps_Lng], {
+                        icon: isFavorite ? icons[2].icon : (Boolean(Number(item.status)) ? icons[1].icon : icons[0].icon)
+                    });
 
-                let googleMapsLink = `https://www.google.com/maps?q=${item.PS_Lat},${item.PS_Lng}`;
-                let popupContent = () => `
-                    車格種類: ${PStype[item['PS_type']]}<br>
-                    車格編號: ${item['PS_ID']}<br>
-                    車位狀態: ${Boolean(Number(item['status'])) ? '有車' : '沒車'}<br>
-                    <a href="${googleMapsLink}" target="_blank">前往Google導航</a><br>
-                    <button onclick="toggleFavorite(${item.PS_Lat}, ${item.PS_Lng}, '${item.PS_ID}', this)">
-                        ${isFavorite ? '取消最愛' : '加入最愛'}
-                    </button>
-                `;
+                    let googleMapsLink = `https://www.google.com/maps?q=${item.ps_Lat},${item.ps_Lng}`;
+                    let popupContent = () => `
+                        區域編號: ${item.section_ID}<br>
+                        車格種類: ${PStype[item.ps_type]}<br>
+                        車格編號: ${item.ps_ID}<br>
+                        車位狀態: ${Boolean(Number(item.status)) ? '有車' : '沒車'}<br>
+                        <a href="${googleMapsLink}" target="_blank">前往Google導航</a><br>
+                        <button onclick="toggleFavorite(${item.ps_Lat}, ${item.ps_Lng}, '${item.ps_ID}', this)">
+                            ${isFavorite ? '取消最愛' : '加入最愛'}
+                        </button>
+                    `;
 
-                point.bindPopup(popupContent);
-                point.addTo(map);
+                    point.bindPopup(popupContent);
+                    point.addTo(map);
 
-                point.on('popupopen', function () {
-                    let button = document.querySelector('.leaflet-popup-content button');
-                    button.onclick = function() {
-                        isFavorite = !isFavorite;
-                        point.setIcon(isFavorite ? icons[2].icon : (item['status'] === '0' ? icons[0].icon : icons[1].icon));
-                        point.bindPopup(popupContent()).openPopup();
-                        updateFavorites(item, isFavorite);
-                    };
-                });
+                    point.on('popupopen', function () {
+                        let button = document.querySelector('.leaflet-popup-content button');
+                        button.onclick = function() {
+                            isFavorite = !isFavorite;
+                            point.setIcon(isFavorite ? icons[2].icon : (Boolean(Number(item.status)) ? icons[1].icon : icons[0].icon));
+                            point.bindPopup(popupContent()).openPopup();
+                            updateFavorites(item, isFavorite);
+                        };
+                    });
+                }
             });
         });
 
@@ -142,8 +178,7 @@
                 var position = layer.getLatLng();
                 if (position.lat === lat && position.lng === lng) {
                     var isFavorite = button.textContent === '加入最愛';
-                    var iconIndex = isFavorite ? 2 : (layer.options.icon === icons[0].icon ? 0 : 1);
-                    layer.setIcon(icons[iconIndex].icon);
+                    layer.setIcon(isFavorite ? icons[2].icon : (layer.options.icon.options.iconUrl === '../images/red.png' ? icons[1].icon : icons[0].icon));
                     button.textContent = isFavorite ? '取消最愛' : '加入最愛';
                     updateFavorites({ PS_ID: PS_ID, PS_Lat: lat, PS_Lng: lng }, isFavorite);
                 }
@@ -156,7 +191,7 @@
         if (isFavorite) {
             favorites.push(item);
         } else {
-            favorites = favorites.filter(fav => fav.PS_ID !== item.PS_ID);
+            favorites = favorites.filter(fav => fav.ps_ID !== item.ps_ID);
         }
         saveFavorites(favorites);
     }
@@ -166,11 +201,14 @@
         if (attribution) {
             attribution.parentNode.removeChild(attribution);
         }
-
-
-
-
     });
 </script>
+<footer style="left: 0;">
+    <ul class="footer-menu">
+        <li><a href="/user"><img src="/images/user.png" alt="User" class="footer-icon"></a></li>
+        <li><a href="/homepage"><img src="/images/home.png" alt="Home" class="footer-icon"></a></li>
+        <li><a href="/logout"><img src="/images/logout.svg" alt="Map" class="footer-icon"></a></li>
+    </ul>
+</footer>
 </body>
 </html>
