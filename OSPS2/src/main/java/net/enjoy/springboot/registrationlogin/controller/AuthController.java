@@ -109,7 +109,7 @@ public class AuthController {
     }
     @GetMapping("/map1admin")
     public String map1admin() {
-        return "map1admin";
+        return "parkingSpots";
     }
 
     @GetMapping("/map2")
