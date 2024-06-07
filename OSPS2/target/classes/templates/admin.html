@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="/css/homepage.css">
   <style>
     footer {
       position: fixed;
@@ -49,15 +51,29 @@
   </style>
 </head>
 <body>
-<a href="/parkingSpots">雲科停車位</a>
+<header>
+  <img src="/images/logo.png" alt="Logo" class="logo">
+</header>
+<main>
+  <h1>Admin User</h1>
+  <button onclick="goToparkingSpotsSetting()" class="Pss_btn">parkingSpots設定</button>
+  <button onclick="userListView()" class="Userlist_btn">Users List查看</button>
+</main>
 <footer style="left: 0;">
   <ul class="footer-menu">
     <li><a href="/user"><img src="/images/user.png" alt="User" class="footer-icon"></a></li>
     <li><a href="/homepage"><img src="/images/home.png" alt="Home" class="footer-icon"></a></li>
     <li><a href="/logout"><img src="/images/logout.svg" alt="Map" class="footer-icon"></a></li>
-
   </ul>
 </footer>
 
+<script>
+  function goToparkingSpotsSetting() {
+    window.location.href = "/parkingSpots";
+  }
+    function userListView() {
+      window.location.href = "/users";
+    }
+</script>
 </body>
 </html>

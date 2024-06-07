@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>map1</title>
+    <title>地圖1</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="../PS_type.js"></script>
@@ -63,7 +63,7 @@
 
 </style>
 <body>
-<button class="button" onclick="window.location.href = 'http://localhost:8080/homepage';">Exit</button>
+<button class="button" onclick="window.location.href = 'http://localhost:8080/homepage';">離開</button>
 <div id="map"></div>
 <script>
     var map = L.map('map');
@@ -118,6 +118,13 @@
                 iconSize: [8, 8],
                 iconAnchor: [3, 3]
             })
+        },
+        {
+            icon: L.icon({
+                iconUrl: '../images/prohibit.png',
+                iconSize: [11, 11],
+                iconAnchor: [3, 3]
+            })
         }
     ];
 
@@ -132,16 +139,21 @@
 
     let favorites = loadFavorites();
 
-    fetch('../parkingSpots')
+    fetch('/yuntechparkingSpots')
         .then(response => response.json())
         .then((data) => {
-            console.log("Parking spots data:", data);
+            console.log("停車位資料：", data);
+            if (!Array.isArray(data) || data.length === 0) {
+                console.error("未收到停車位資料或資料不是陣列");
+                return;
+            }
             data.forEach((item) => {
-                console.log("Parking spot:", item);
+                console.log("停車位：", item);
                 let isFavorite = favorites.some(fav => fav.ps_ID === item.ps_ID);
                 if (item.ps_Lat && item.ps_Lng) {
                     let point = new L.Marker([item.ps_Lat, item.ps_Lng], {
-                        icon: isFavorite ? icons[2].icon : (Boolean(Number(item.status)) ? icons[1].icon : icons[0].icon)
+                        icon: isFavorite ? icons[2].icon : (item.status === 3 ? icons[3].icon : (Boolean(Number(item.status)) ? icons[1].icon : icons[0
+                            ].icon))
                     });
 
                     let googleMapsLink = `https://www.google.com/maps?q=${item.ps_Lat},${item.ps_Lng}`;
@@ -149,7 +161,7 @@
                         區域編號: ${item.section_ID}<br>
                         車格種類: ${PStype[item.ps_type]}<br>
                         車格編號: ${item.ps_ID}<br>
-                        車位狀態: ${Boolean(Number(item.status)) ? '有車' : '沒車'}<br>
+                        車位狀態: ${item.status === 3 ? '無法停車' : (Boolean(Number(item.status)) ? '有車' : '沒車')}<br>
                         <a href="${googleMapsLink}" target="_blank">前往Google導航</a><br>
                         <button onclick="toggleFavorite(${item.ps_Lat}, ${item.ps_Lng}, '${item.ps_ID}', this)">
                             ${isFavorite ? '取消最愛' : '加入最愛'}
@@ -163,13 +175,16 @@
                         let button = document.querySelector('.leaflet-popup-content button');
                         button.onclick = function() {
                             isFavorite = !isFavorite;
-                            point.setIcon(isFavorite ? icons[2].icon : (Boolean(Number(item.status)) ? icons[1].icon : icons[0].icon));
+                            point.setIcon(isFavorite ? icons[2].icon : (item.status === 3 ? icons[3].icon : (Boolean(Number(item.status)) ? icons[1].icon : icons[0].icon)));
                             point.bindPopup(popupContent()).openPopup();
                             updateFavorites(item, isFavorite);
                         };
                     });
                 }
             });
+        })
+        .catch(error => {
+            console.error("取得停車位資料時發生錯誤：", error);
         });
 
     function toggleFavorite(lat, lng, PS_ID, button) {
