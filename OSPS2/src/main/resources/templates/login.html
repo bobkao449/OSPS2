@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="zh"
       xmlns:th="http://www.thymeleaf.org"
 >
 <head>
@@ -9,6 +9,17 @@
           rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
           crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #474646;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .login-logo {
+            width: 200px;
+            height: 80px;
+        }
+    </style>
 </head>
 <body>
 <br /><br /><br />
@@ -24,8 +35,8 @@
             </div>
 
             <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center">Login</h2>
+                <div class="card-header text-center">
+                    <img src="../images/logo.png" alt="login_logo" class="img-fluid login-logo">
                 </div>
                 <div class="card-body">
                     <form
@@ -35,7 +46,7 @@
                             class="form-horizontal"
                     >
                         <div class="form-group mb-3">
-                            <label class="control-label" >Email</label>
+                            <label class="control-label">Email</label>
                             <input
                                     type="text"
                                     id="username"
@@ -46,7 +57,7 @@
                         </div>
 
                         <div class="form-group mb-3">
-                            <label class="control-label"> Password</label>
+                            <label class="control-label">Password</label>
                             <input
                                     type="password"
                                     id="password"
